@@ -125,21 +125,21 @@ pub fn direct_pose_estimation_single_layer(
 
         cost /= good_point_count as f32;
 
+        if cost > last_cost {
+            break; 
+        }
+
         // Solve the normal equations: J^T * J * update = J^T * residual
         // svd solve Solves the system self * x = b where self is the decomposed matrix and x the unknown.
         let update = na::linalg::SVD::new(hessian, true, true)
             .solve(&bias, tolerance)
             .unwrap_or(Vec6::zeros());
-        *t2_tr_t1 = exp_map(&update) * *t2_tr_t1;
-
-        if cost > last_cost {
-            break; 
-        }
 
         if update.norm() < 1e-3 {
             break; 
         }
 
+        *t2_tr_t1 = exp_map(&update) * *t2_tr_t1;
         last_cost = cost; 
     }
 
