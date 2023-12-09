@@ -1,0 +1,16 @@
+[package]
+name = "direct_method_simple"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+image = "0.19" # Encoding/decoding images in Rust.
+png = "0.12"
+byteorder = "1.2" # Reading numbers in [big/little]-endian.
+nalgebra = "0.17" # Linear algebra.
+rand = "0.6" # Random number generators.
+num-traits = "0.2" # Useful numeric traits.
+nom = "4.2" # Parsing files.
+itertools = "0.7" # More iterators.
