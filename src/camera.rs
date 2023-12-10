@@ -46,6 +46,10 @@ impl Intrinsics {
     pub fn get_cy(&self) -> Float {
         self.principal_point.1 
     }
+
+    pub fn get_resolution(&self) -> (Float, Float) {
+        (640.0, 480.0)
+    }
 }
 
 #[derive(PartialEq, Debug, Clone)]

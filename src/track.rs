@@ -2,19 +2,23 @@ use std::collections::binary_heap;
 
 use nalgebra as na; 
 use nalgebra::DMatrix;
+use rand::Rng;
 
 use crate::type_aliases::{Float, Point2, SE3, Mat26, Mat3, Mat6, Vec2, Vec3, Vec6}; 
 use crate::dataset::DEPTH_SCALE; 
 use crate::camera::Intrinsics; 
 
 pub fn get_pixel_values(img_width: usize, img_height: usize) -> Vec<Point2> {
-    let mut pixels = Vec::with_capacity(img_height * img_width); 
+    let total_pixels = 500; 
+    let mut pixels = Vec::with_capacity(total_pixels); 
     let border = 20; 
     
-    for i in border..img_width-border {
-        for j in border..img_height-border {
-            pixels.push(Point2::new(i as f32, j as f32));
-        }
+    let mut rng = rand::thread_rng();
+    for _ in 0..total_pixels {
+        let random_u = rng.gen_range(border, img_width - border);
+        let random_v = rng.gen_range(border, img_height - border);
+
+        pixels.push(Point2::new(random_u as f32, random_v as f32));
     }
 
     pixels 
