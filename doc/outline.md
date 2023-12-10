@@ -1,0 +1,10 @@
+- 直接法概述
+- 内参 struct 
+- 数据集
+- 优化相机位姿
+   - 用pytorch的AD
+- 可视化
+   - kiss3d vs rerun
+- 进阶
+  - 图像金字塔
+  - inverse compositional 
