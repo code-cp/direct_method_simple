@@ -73,6 +73,7 @@ pub fn direct_pose_estimation_single_layer(
     
             let uv = intrinsics.project(&point_cur); 
             let (u, v) = (uv[0], uv[1]); 
+            // println!("projection u {u} v {v}"); 
             if (u as usize) < 1 || (u as usize) > img2.ncols() - 1 ||
                 (v as usize) < 1 || (v as usize) > img2.nrows() - 1 {
                     // ignore invalid pixel 
@@ -88,10 +89,10 @@ pub fn direct_pose_estimation_single_layer(
             for i in -1..=1 {
                 for j in -1..=1 {
                     let (du, dv) = (i as f32, j as f32); 
-                    if pixel.x + du < 0.0 || pixel.x + du > img1.ncols() as f32 || pixel.y + dv < 0.0 || pixel.y + dv > img1.nrows() as f32 {
+                    if pixel.x + du < 0.0 || pixel.x + du >= img1.ncols() as f32 || pixel.y + dv < 0.0 || pixel.y + dv >= img1.nrows() as f32 {
                         continue; 
                     }
-                    if u+ du < 0.0 || u + du > img1.ncols() as f32 || v + dv < 0.0 || v + dv > img1.nrows() as f32 {
+                    if u+ du < 0.0 || u + du >= img1.ncols() as f32 || v + dv < 0.0 || v + dv >= img1.nrows() as f32 {
                         continue; 
                     }
                     good_point_count += 1;

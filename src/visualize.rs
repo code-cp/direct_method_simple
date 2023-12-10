@@ -48,7 +48,7 @@ pub fn visualize_tracked_points(na_mat: &na::DMatrix<u8>, reference: &Vec<Point2
         let tracked_p = cv2::core::Point {x: tracked_pixel.x as i32, y: tracked_pixel.y as i32}; 
         cv2::imgproc::draw_marker(&mut color_mat, tracked_p, cv2::core::Scalar::new(255.0,0.0,0.0, 0.0), 1, 1, 1, 1)?;
 
-        cv2::imgproc::line(&mut color_mat, ref_p, tracked_p, cv2::core::Scalar::new(0.0,0.0,255.0, 0.0), 1, 1, 1)?;
+        cv2::imgproc::line(&mut color_mat, ref_p, tracked_p, cv2::core::Scalar::new(0.0,0.0,255.0, 0.0), 1, 1, 0)?;
     }
 
     color_mat.try_as_array()

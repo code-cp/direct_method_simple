@@ -24,7 +24,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // If we log a pinhole camera model, the depth gets automatically back-projected to 3D
     rec.log(
-        "world/camera/image",
+        "world/camera",
         &rerun::Pinhole::from_focal_length_and_resolution(
             intrinsics.focal,
             intrinsics.get_resolution(),
@@ -78,7 +78,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         let rgb_image = visualize_tracked_points(&prev_img, &pixels, &projected_points).unwrap(); 
         rec.log("tracks", &rerun::Image::try_from(rgb_image)?)?;
 
-        (prev_depth_map, prev_img) = (cur_depth_map, cur_img); 
+        (prev_depth_map, prev_img) = (cur_depth_map, cur_img);
     }
 
     Ok(())
