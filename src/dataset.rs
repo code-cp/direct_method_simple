@@ -1,6 +1,9 @@
 use nalgebra as na; 
 use std::path::PathBuf; 
 
+use image::{GrayImage, ImageBuffer, Luma, Rgb, RgbImage};
+use nalgebra::DMatrix;
+
 use crate::camera::Intrinsics; 
 use crate::type_aliases::{Float, SE3}; 
 
@@ -181,9 +184,6 @@ pub fn read_png_16bits<P: AsRef<Path>>(
     // Return u16 buffer.
     Ok((info.width as usize, info.height as usize, buffer_u16))
 }
-
-use image::{GrayImage, ImageBuffer, Luma, Rgb, RgbImage};
-use nalgebra::DMatrix;
 
 /// Convert an `u8` matrix into a `GrayImage`.
 /// Inverse operation of `matrix_from_image`.

@@ -4,12 +4,17 @@ use direct_method_simple as dms;
 
 use na::DMatrix;
 use std::{env, error::Error, fs, io::BufReader, io::Read, path::Path, path::PathBuf};
+use rerun::RecordingStreamBuilder;
 
 use dms::dataset;
 use dms::track::*; 
 use dms::type_aliases::*; 
+use dms::visualize::*; 
 
 fn main() -> Result<(), Box<dyn Error>> {
+    // visualization 
+    let rec = RecordingStreamBuilder::new("direct_method_simple").save("./logs/my_recording.rrd")?;
+
     let associations_file_path = "/home/sean/workspace/rgbd_dataset_freiburg1_xyz/associations.txt"; 
     let associations = parse_associations(associations_file_path)?;
 
@@ -17,8 +22,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut w_tr_c = SE3::identity(); 
 
     let (mut prev_depth_map, mut prev_img) = read_images(&associations[0])?;
-    let depth_time = associations[0].depth_timestamp;
-    let img_time = associations[0].color_timestamp;
+    // let depth_time = associations[0].depth_timestamp;
+    // let img_time = associations[0].color_timestamp;
 
     let pixels = get_pixel_values(prev_depth_map.ncols(), prev_depth_map.nrows());
 
@@ -38,7 +43,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         );
         w_tr_c = w_tr_c * t2_tr_t1.inverse(); 
 
+        let rgb_image = visualize_tracked_points(&prev_img, &pixels, &projected_points).unwrap(); 
+
+        rec.log("tracked_features", &rerun::Image::try_from(rgb_image)?)?;
+
         (prev_depth_map, prev_img) = (cur_depth_map, cur_img); 
+
+        break; 
     }
 
     Ok(())
@@ -74,8 +85,10 @@ fn abs_path<P: AsRef<Path>>(file_path: P, assoc: &dataset::Association) -> datas
 /// Read a depth and color image given by an association.
 fn read_images(assoc: &dataset::Association) -> Result<(DMatrix<u16>, DMatrix<u8>), Box<dyn Error>> {
     let (w, h, depth_map_vec_u16) = dataset::read_png_16bits(&assoc.depth_file_path)?;
+    // println!("depth image width {w} height {h}");
     let depth_map = DMatrix::from_row_slice(h, w, depth_map_vec_u16.as_slice());
     let img = dataset::matrix_from_image(image::open(&assoc.color_file_path)?.to_luma());
+    // println!("color image width {} height {}", img.shape().1, img.shape().0);
     Ok((depth_map, img))
 }
 

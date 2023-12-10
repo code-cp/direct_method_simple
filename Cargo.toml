@@ -14,3 +14,7 @@ rand = "0.6" # Random number generators.
 num-traits = "0.2" # Useful numeric traits.
 nom = "4.2" # Parsing files.
 itertools = "0.7" # More iterators.
+rerun = "0.11.0"
+opencv = "0.88.1"
+ndarray = "0.15"
+anyhow = "1.0.57"
