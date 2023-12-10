@@ -1,5 +1,3 @@
-use std::collections::binary_heap;
-
 use nalgebra as na; 
 use nalgebra::DMatrix;
 use rand::Rng;
@@ -46,12 +44,13 @@ pub fn direct_pose_estimation_single_layer(
     t2_tr_t1: &mut SE3,  
 ) -> Vec<Point2> {
     let iterations = 10; 
-    let mut cost = 0.0; 
-    let mut last_cost = 0.0; 
+    let mut cost; 
+    let mut last_cost = f32::MAX; 
     let mut projected_points = Vec::with_capacity(pixels.len()); 
     let tolerance = 1e-3;
 
     for _ in 0..iterations {
+        cost = 0.0; 
         let mut good_point_count = 0; 
         let mut hessian = Mat6::zeros(); 
         let mut bias: na::Matrix<f32, na::U6, na::U1, na::ArrayStorage<f32, na::U6, na::U1>> = Vec6::zeros();     
@@ -82,14 +81,20 @@ pub fn direct_pose_estimation_single_layer(
     
             let n = projected_points.len();
             projected_points[n - 1] = Point2::new(u, v); 
-            good_point_count += 1; 
-    
+     
             let (x, y, z) = (point_cur.x, point_cur.y, point_cur.z); 
             let (z_inv, z2_inv) = (1.0 / z, 1.0 / (z * z));
     
             for i in -1..=1 {
                 for j in -1..=1 {
                     let (du, dv) = (i as f32, j as f32); 
+                    if pixel.x + du < 0.0 || pixel.x + du > img1.ncols() as f32 || pixel.y + dv < 0.0 || pixel.y + dv > img1.nrows() as f32 {
+                        continue; 
+                    }
+                    if u+ du < 0.0 || u + du > img1.ncols() as f32 || v + dv < 0.0 || v + dv > img1.nrows() as f32 {
+                        continue; 
+                    }
+                    good_point_count += 1;
                     let residual = bilinear_interpolation(img1, pixel.x + du, pixel.y + dv) - 
                     bilinear_interpolation(img2, u + du, v + dv);
     
@@ -127,7 +132,9 @@ pub fn direct_pose_estimation_single_layer(
             continue; 
         }
 
+        // println!("good points count is {}", good_point_count); 
         cost /= good_point_count as f32;
+        // println!("cost is {}", cost); 
 
         if cost > last_cost {
             break; 
@@ -138,6 +145,7 @@ pub fn direct_pose_estimation_single_layer(
         let update = na::linalg::SVD::new(hessian, true, true)
             .solve(&bias, tolerance)
             .unwrap_or(Vec6::zeros());
+        // println!("update is {}", update); 
 
         if update.norm() < 1e-3 {
             break; 

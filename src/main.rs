@@ -24,7 +24,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // If we log a pinhole camera model, the depth gets automatically back-projected to 3D
     rec.log(
-        "world/camera/#0/image",
+        "world/camera/image",
         &rerun::Pinhole::from_focal_length_and_resolution(
             intrinsics.focal,
             intrinsics.get_resolution(),
@@ -63,6 +63,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             &mut t2_tr_t1, 
         );
         w_tr_c = w_tr_c * t2_tr_t1.inverse(); 
+        // println!("Current pose {:?}", w_tr_c); 
 
         let arrow = rerun::Arrows3D::from_vectors(
             [w_tr_c.rotation.euler_angles()]
@@ -72,7 +73,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 w_tr_c.translation.y,
                 w_tr_c.translation.z,
             )]);
-        rec.log("world/camera/#0", &arrow)?;
+        rec.log("pose", &arrow)?;
 
         let rgb_image = visualize_tracked_points(&prev_img, &pixels, &projected_points).unwrap(); 
         rec.log("tracks", &rerun::Image::try_from(rgb_image)?)?;
